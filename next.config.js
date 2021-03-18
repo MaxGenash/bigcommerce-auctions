@@ -3,7 +3,7 @@ const withCommerceConfig = require('./framework/commerce/with-config')
 
 module.exports = withCommerceConfig({
   images: {
-    domains: ['cdn.store.bcdev'],
+    domains: ['cdn.store.bcdev', 'cdn11.bigcommerce.com'],
   },
   commerce,
   rewrites() {

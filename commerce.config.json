@@ -1,7 +1,7 @@
 {
   "provider": "bigcommerce",
   "images": {
-    "domains": ["cdn.store.bcdev"]
+    "domains": ["cdn.store.bcdev", "cdn11.bigcommerce.com"]
   },
   "features": {
     "wishlist": true,
