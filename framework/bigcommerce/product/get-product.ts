@@ -100,7 +100,7 @@ async function getProduct({
   const locale = vars.locale || config.locale
   const variables: GetProductQueryVariables = {
     ...vars,
-    locale,
+    locale: locale ? locale : 'null',
     hasLocale: !!locale,
     path: slug ? `/${slug}/` : vars.path!,
   }

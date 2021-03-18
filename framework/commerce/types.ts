@@ -201,3 +201,20 @@ interface ProductPrice {
   extendedSalePrice?: number
   extendedListPrice?: number
 }
+
+export type Auction = {
+  id: number
+  description: string
+  source_product_id: number
+  source_variant_id: number
+  initial_price: number
+  actual_price: number
+}
+
+export type Bid = {
+  id: number
+  auction_id: Auction['id']
+  customer_id: number //Custom id
+  bid_date: Date
+  bid_price: number
+}

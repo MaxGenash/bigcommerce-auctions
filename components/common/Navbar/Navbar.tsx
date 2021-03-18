@@ -28,6 +28,9 @@ const Navbar: FC = () => (
             <Link href="/search?q=shoes">
               <a className={s.link}>Shoes</a>
             </Link>
+            <Link href="/auctions">
+              <a className={s.link}>Auctions</a>
+            </Link>
           </nav>
         </div>
 
