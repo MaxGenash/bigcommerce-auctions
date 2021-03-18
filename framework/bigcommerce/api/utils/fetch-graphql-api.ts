@@ -1,8 +1,10 @@
 import { FetcherError } from '@commerce/utils/errors'
 import type { GraphQLFetcher } from '@commerce/api'
 import { getConfig } from '..'
-import fetch from './fetch'
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
+// @ts-ignore
 const fetchGraphqlApi: GraphQLFetcher = async (
   query: string,
   { variables, preview } = {},

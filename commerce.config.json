@@ -1,5 +1,8 @@
 {
   "provider": "bigcommerce",
+  "images": {
+    "domains": ["cdn.store.bcdev"]
+  },
   "features": {
     "wishlist": true,
     "customCheckout": false
