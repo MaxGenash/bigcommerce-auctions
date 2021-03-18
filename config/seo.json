@@ -1,26 +1,21 @@
 {
-  "title": "ACME Storefront | Powered by Next.js Commerce",
-  "titleTemplate": "%s - ACME Storefront",
-  "description": "Next.js Commerce - https://www.nextjs.org/commerce",
+  "title": "BC Auctions Demo Storefront",
+  "titleTemplate": "%s - BC Auctions Demo Storefront",
+  "description": "BC Auctions Demo Storefront",
   "openGraph": {
-    "title": "ACME Storefront | Powered by Next.js Commerce",
-    "description": "Next.js Commerce - https://www.nextjs.org/commerce",
+    "title": "BC Auctions Demo Storefront",
+    "description": "BC Auctions Demo Storefront",
     "type": "website",
     "locale": "en_IE",
     "url": "https://nextjs.org/commerce",
-    "site_name": "Next.js Commerce",
+    "site_name": "BC Auctions Demo Storefront",
     "images": [
       {
         "url": "/card.png",
         "width": 800,
         "height": 600,
-        "alt": "Next.js Commerce"
+        "alt": "BC Auctions Demo Storefront"
       }
     ]
-  },
-  "twitter": {
-    "handle": "@nextjs",
-    "site": "@nextjs",
-    "cardType": "summary_large_image"
   }
 }
