@@ -9,7 +9,10 @@ const getProduct = (
   auction: Auction,
   products: Product[]
 ): Product | undefined => {
-  return products.find((product) => product.id === auction.source_product_id)
+  const foundItem = products.find((item) => (
+    item?.site?.product?.entityId === auction.source_product_id
+  ));
+  return foundItem?.site?.product
 }
 
 const AuctionsList = ({
@@ -19,6 +22,9 @@ const AuctionsList = ({
   auctions: Auction[]
   products: Product[]
 }) => {
+
+  // TODO: use markup similar to search page
+
   return (
     <div>
       <h1>Auctions List</h1>
@@ -34,19 +40,19 @@ const AuctionsList = ({
           <tr>
             <td>{auction.id}</td>
             <td>{auction.description}</td>
-            <td>{getProduct(auction, products)!.name}</td>
+            <td>{getProduct(auction, products)?.name}</td>
             <td>
               <Image
                 // className={s.productImage}
                 width={150}
                 height={150}
-                src={getProduct(auction, products)!.images[0]!.url}
-                alt={getProduct(auction, products)!.images[0]!.alt}
+                src={getProduct(auction, products)?.images[0]?.url || '/product-img-placeholder.svg'}
+                alt={getProduct(auction, products)?.images[0]?.alt}
                 unoptimized
               />
             </td>
             <td>
-              <Link href="/auctions/{auction.id}">
+              <Link href={`/auctions/${auction.id}`}>
                 <a className={s.link}>Auctions</a>
               </Link>
             </td>

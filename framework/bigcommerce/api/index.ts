@@ -70,7 +70,7 @@ const config = new Config({
   cartCookie: process.env.BIGCOMMERCE_CART_COOKIE ?? 'bc_cartId',
   cartCookieMaxAge: ONE_DAY * 30,
   fetch: fetchGraphqlApi,
-  applyLocale: true,
+  applyLocale: false,
   // REST API only
   storeApiUrl: STORE_API_URL,
   storeApiToken: STORE_API_TOKEN,
