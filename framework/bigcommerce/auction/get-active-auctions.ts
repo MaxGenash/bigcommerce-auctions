@@ -9,6 +9,10 @@ const auctions: Auction[] = [
     source_variant_id: 64,
     initial_price: 50,
     actual_price: 60,
+    price_step: 10,
+    status: 1,
+    start_date: Date.UTC(2021, 3, 10, 9, 30),
+    end_date: Date.UTC(2021, 3, 23, 9, 30),
   },
   {
     id: 2,
@@ -17,6 +21,10 @@ const auctions: Auction[] = [
     source_variant_id: 1,
     initial_price: 20,
     actual_price: 80,
+    price_step: 10,
+    status: 1,
+    start_date: Date.UTC(2021, 3, 8, 18, 0),
+    end_date: Date.UTC(2021, 3, 20, 18, 0),
   },
   {
     id: 3,
@@ -25,6 +33,10 @@ const auctions: Auction[] = [
     source_variant_id: 67,
     initial_price: 70,
     actual_price: 200,
+    price_step: 10,
+    status: 1,
+    start_date: Date.UTC(2021, 3, 15, 12, 45),
+    end_date: Date.UTC(2021, 3, 21, 12, 45),
   },
 ]
 

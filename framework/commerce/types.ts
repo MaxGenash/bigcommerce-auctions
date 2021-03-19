@@ -202,19 +202,23 @@ interface ProductPrice {
   extendedListPrice?: number
 }
 
-export type Auction = {
+export interface Auction {
   id: number
   description: string
   source_product_id: number
   source_variant_id: number
   initial_price: number
   actual_price: number
+  price_step: number
+  status: number
+  start_date: number
+  end_date: number
 }
 
-export type Bid = {
+export interface Bid {
   id: number
   auction_id: Auction['id']
-  customer_id: number //Custom id
-  bid_date: Date
+  customer_id: number
+  bid_date: number
   bid_price: number
 }
