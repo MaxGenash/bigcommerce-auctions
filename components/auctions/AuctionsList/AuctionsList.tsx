@@ -9,10 +9,7 @@ const getProduct = (
   auction: Auction,
   products: Product[]
 ): Product | undefined => {
-  const foundItem = products.find((item) => (
-    item?.site?.product?.entityId === auction.source_product_id
-  ));
-  return foundItem?.site?.product
+  return products.find((product) => (product?.id == auction.source_product_id));
 }
 
 const AuctionsList = ({
