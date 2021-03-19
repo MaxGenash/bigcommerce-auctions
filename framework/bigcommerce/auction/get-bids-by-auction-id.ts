@@ -73,15 +73,12 @@ const getMockedBids = (id: number) => {
   return []
 }
 
-async function getBidsByAuctionId(
-  config: BigcommerceConfig,
-  id: number
-): Promise<Bid[]> {
-  return getMockedBids(id)
+async function getBidsByAuctionId(config: BigcommerceConfig, id: number): Promise<Bid[]> {
+  const url = `/v3/catalog/auctions/${id}/bids?limit=10000`
+  const { data } = await config.storeApiFetch<{ data: Bid[] }>(url)
 
-  // TODO: use when ready
-  const url = `v3/auctions/${id}/bids1`
-  const { data } = await config.storeApiFetch<any>(url)
+  console.log('GET', url, '=')
+  console.log(data)
   return data
 }
 

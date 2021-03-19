@@ -45,7 +45,6 @@ async function getProductById(config: BigcommerceConfig, productId: number): Pro
   const product = data?.site?.product
 
   return product ? normalizeProduct(product) : null
-
 }
 
 export default getProductById

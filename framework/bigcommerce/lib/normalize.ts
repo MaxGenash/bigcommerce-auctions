@@ -1,4 +1,5 @@
-import type { Product } from '@commerce/types'
+import { DateTime } from 'luxon'
+import type { Auction, Product } from '@commerce/types'
 import type { Cart, BigcommerceCart, LineItem } from '../types'
 import update from './immutability'
 
@@ -109,5 +110,14 @@ function normalizeLineItem(item: any): LineItem {
     discounts: item.discounts.map((discount: any) => ({
       value: discount.discounted_amount,
     })),
+  }
+}
+
+export function normalizeAuctionData(auction: any): Auction {
+  return {
+    ...auction,
+    // Convert from Unix timestamps to JS timestamps
+    start_date: DateTime.fromSeconds(auction.start_date).toMillis(),
+    end_date: DateTime.fromSeconds(auction.end_date).toMillis(),
   }
 }
