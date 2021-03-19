@@ -4,21 +4,22 @@ import { NextSeo } from 'next-seo'
 import { FC, useState } from 'react'
 import { ProductSlider } from '@components/product'
 import { Button, Container, Input, Text } from '@components/ui'
-import type { Auction, Product } from '@commerce/types'
+import type { Auction, Product, Bid } from '@commerce/types'
 import usePrice from '@framework/product/use-price'
 import { DateTime, Duration } from 'luxon'
+import { useTimer } from 'use-timer'
 
 import s from './AuctionView.module.css'
-import { useTimer } from 'use-timer'
 
 interface Props {
   className?: string
   children?: any
   product: Product
   auction: Auction
+  bids: Bid[]
 }
 
-const AuctionView: FC<Props> = ({ product, auction }) => {
+const AuctionView: FC<Props> = ({ product, auction, bids}) => {
   const minNextBidValue = auction.actual_price + auction.price_step;
   const currencyCode = product?.price?.currencyCode;
   const { price: currentBidPrice } = usePrice({
@@ -55,16 +56,15 @@ const AuctionView: FC<Props> = ({ product, auction }) => {
       setLoading(false);
     }
   }
+  const bidsOverall = bids?.length || 0;
 
-  const endDateStr = DateTime.fromMillis(auction.end_date).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
-  const bidsOverall = 12; // TODO: fetch real amount
   const { time: currentSecondsLeft } = useTimer({
     initialTime: Math.floor((auction.end_date - Date.now()) / 1000),
     timerType: 'DECREMENTAL',
     autostart: true,
   });
-
   const timeLeftInfo = Duration.fromMillis(currentSecondsLeft * 1000).shiftTo('days', 'hours', 'minutes', 'seconds').toObject();
+  const endDateStr = DateTime.fromMillis(auction.end_date).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
 
   return (
     <Container className="max-w-none w-full" clean>

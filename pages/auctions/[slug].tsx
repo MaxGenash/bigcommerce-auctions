@@ -11,6 +11,7 @@ import { getConfig } from '@framework/api'
 import getAuction from '@framework/auction/get-auction'
 import getProductById from '@framework/product/get-product-by-id'
 import { getActiveAuctions } from '@framework/auction'
+import getBidsByAuctionId from '@framework/auction/get-bids-by-auction-id'
 
 export async function getStaticProps({ params }: GetStaticPropsContext<{ slug: string }>) {
   const config = getConfig()
@@ -23,8 +24,8 @@ export async function getStaticProps({ params }: GetStaticPropsContext<{ slug: s
   }
 
   const auction = await getAuction(config, auctionId);
-  const product = await getProductById(config, auction.source_product_id)
-  const productData = product?.site?.product;
+  const product = await getProductById(config, auction.source_product_id);
+  const bids = await getBidsByAuctionId(config, auctionId);
 
   if (!product) {
     throw new Error(`Product with slug '${params!.slug}' not found`)
@@ -34,6 +35,7 @@ export async function getStaticProps({ params }: GetStaticPropsContext<{ slug: s
     props: {
       auction,
       product,
+      bids,
     },
     revalidate: 1,
   }
@@ -48,12 +50,12 @@ export async function getStaticPaths({}: GetStaticPathsContext) {
   }
 }
 
-export default function AuctionPage({ product, auction }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function AuctionPage({ product, auction, bids }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter()
 
   return router.isFallback ?
     <h1>Loading...</h1> :
-    <AuctionView product={product} auction={auction} />
+    <AuctionView product={product} auction={auction} bids={bids} />
 }
 
 AuctionPage.Layout = Layout
