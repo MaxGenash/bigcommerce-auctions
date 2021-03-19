@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import Image from 'next/image'
 import { NextSeo } from 'next-seo'
-import { FC, useState } from 'react'
+import { FC, FormEvent, useState } from 'react'
 import { ProductSlider } from '@components/product'
 import { Button, Container, Input, Text } from '@components/ui'
 import type { Auction, Product, Bid } from '@commerce/types'
@@ -10,6 +10,7 @@ import { DateTime, Duration } from 'luxon'
 import { useTimer } from 'use-timer'
 
 import s from './AuctionView.module.css'
+import { useRouter } from 'next/router'
 
 interface Props {
   className?: string
@@ -22,16 +23,13 @@ interface Props {
 const AuctionView: FC<Props> = ({ product, auction, bids}) => {
   const minNextBidValue = auction.actual_price + auction.price_step;
   const currencyCode = product?.price?.currencyCode;
-  const { price: currentBidPrice } = usePrice({
-    amount: auction.actual_price,
-    currencyCode: currencyCode,
-  })
-  const { price: minNextBidPrice } = usePrice({
-    amount: minNextBidValue,
-    currencyCode: currencyCode,
-  })
+  const { price: currentBidPrice } = usePrice({ amount: auction.actual_price, currencyCode: currencyCode })
+  const { price: minNextBidPrice } = usePrice({ amount: minNextBidValue, currencyCode: currencyCode })
+
   const [isLoading, setLoading] = useState(false)
   const [placedBid, setPlacedBid] = useState()
+
+  const router = useRouter()
 
   // TODO: disable bid button if not logged in
   // const { data: customer } = useCustomer()
@@ -39,7 +37,8 @@ const AuctionView: FC<Props> = ({ product, auction, bids}) => {
   //   throw new Error(`You should be logged in to be able to see auctions`)
   // }
 
-  const submitBid = async () => {
+  const submitBid = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoading(true)
     try {
       // TODO updateBid
@@ -48,7 +47,7 @@ const AuctionView: FC<Props> = ({ product, auction, bids}) => {
       //   variantId: String(variant ? variant.id : product.variants[0].id),
       // })
       alert('Your bid was saved successfully!');
-      // TODO: reload page
+      router.reload();
       setLoading(false);
     } catch (err) {
       console.error(err);
