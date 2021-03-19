@@ -3,12 +3,13 @@ import Image from 'next/image'
 import { NextSeo } from 'next-seo'
 import { FC, useState } from 'react'
 import { ProductSlider } from '@components/product'
-import { Button, Container, Input, Text, useUI } from '@components/ui'
+import { Button, Container, Input, Text } from '@components/ui'
 import type { Auction, Product } from '@commerce/types'
 import usePrice from '@framework/product/use-price'
-import { useAddItem } from '@framework/cart'
+import { DateTime, Duration } from 'luxon'
 
 import s from './AuctionView.module.css'
+import { useTimer } from 'use-timer'
 
 interface Props {
   className?: string
@@ -28,11 +29,8 @@ const AuctionView: FC<Props> = ({ product, auction }) => {
     amount: minNextBidValue,
     currencyCode: currencyCode,
   })
-  const { openSidebar } = useUI()
   const [isLoading, setLoading] = useState(false)
   const [placedBid, setPlacedBid] = useState()
-
-  const addItem = useAddItem()
 
   // TODO: disable bid button if not logged in
   // const { data: customer } = useCustomer()
@@ -43,16 +41,30 @@ const AuctionView: FC<Props> = ({ product, auction }) => {
   const submitBid = async () => {
     setLoading(true)
     try {
-      await addItem({
-        productId: String(product.id),
-        variantId: String(product.variants[0].id),
-      })
-      openSidebar()
-      setLoading(false)
+      // TODO updateBid
+      // await addItem({
+      //   productId: String(product.id),
+      //   variantId: String(variant ? variant.id : product.variants[0].id),
+      // })
+      alert('Your bid was saved successfully!');
+      // TODO: reload page
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
+      console.error(err);
+      alert('Couldn\'t save your bid');
+      setLoading(false);
     }
   }
+
+  const endDateStr = DateTime.fromMillis(auction.end_date).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+  const bidsOverall = 12; // TODO: fetch real amount
+  const { time: currentSecondsLeft } = useTimer({
+    initialTime: Math.floor((auction.end_date - Date.now()) / 1000),
+    timerType: 'DECREMENTAL',
+    autostart: true,
+  });
+
+  const timeLeftInfo = Duration.fromMillis(currentSecondsLeft * 1000).shiftTo('days', 'hours', 'minutes', 'seconds').toObject();
 
   return (
     <Container className="max-w-none w-full" clean>
@@ -94,15 +106,15 @@ const AuctionView: FC<Props> = ({ product, auction }) => {
             <div className="pb-6">
               <h4 className="font-bold text-base"> Time left </h4>
               <p>
-                <span> 1d 12h 30s </span>
-                <span> (Sep 24, 9:25 AM) </span>
+                <span> {timeLeftInfo.days}d {timeLeftInfo.hours}h {timeLeftInfo.minutes}m {timeLeftInfo.seconds}s </span>
+                <span> ({endDateStr}) </span>
               </p>
             </div>
             <div className="pb-6">
               <h4 className="font-bold text-base"> Current bid </h4>
               <p>
               <span className={s.price}> {currentBidPrice} {` `} {currencyCode} </span>
-                <span> (12 bids) </span>
+                <span> ({bidsOverall} bids) </span>
               </p>
             </div>
             <div className="pb-6">
