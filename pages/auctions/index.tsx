@@ -360,6 +360,7 @@ export default function AuctionsList({
             <Grid layout="normal">
               {auctions?.map((auction: Auction) => (
                 <AuctionsCard
+                  key={auction.id}
                   auction={auction}
                   product={getProduct(auction, products)}
                   bids={getBids(auction, bids)}

@@ -20,7 +20,7 @@ const AuctionsCard = ({
 }: {
   auction: Auction
   product: Product | undefined
-  bids: Bid[]
+  bids: Bid[] | undefined
 }) => {
   const bidsNumber = bids ? bids.length : 0
   return (
