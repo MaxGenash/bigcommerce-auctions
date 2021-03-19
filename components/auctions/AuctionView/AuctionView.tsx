@@ -4,7 +4,7 @@ import { NextSeo } from 'next-seo'
 import { FC, useState } from 'react'
 import { ProductSlider } from '@components/product'
 import { Button, Container, Input, Text, useUI } from '@components/ui'
-import type { Product } from '@commerce/types'
+import type { Auction, Product } from '@commerce/types'
 import usePrice from '@framework/product/use-price'
 import { useAddItem } from '@framework/cart'
 
@@ -14,26 +14,31 @@ interface Props {
   className?: string
   children?: any
   product: Product
+  auction: Auction
 }
 
-const AuctionView: FC<Props> = ({ product }) => {
-  const addItem = useAddItem()
-  const { price } = usePrice({
-    amount: product.price.value,
-    baseAmount: product.price.retailPrice,
-    currencyCode: product.price.currencyCode!,
+const AuctionView: FC<Props> = ({ product, auction }) => {
+  const minNextBidValue = auction.actual_price + auction.price_step;
+  const currencyCode = product?.price?.currencyCode;
+  const { price: currentBidPrice } = usePrice({
+    amount: auction.actual_price,
+    currencyCode: currencyCode,
+  })
+  const { price: minNextBidPrice } = usePrice({
+    amount: minNextBidValue,
+    currencyCode: currencyCode,
   })
   const { openSidebar } = useUI()
   const [isLoading, setLoading] = useState(false)
   const [placedBid, setPlacedBid] = useState()
+
+  const addItem = useAddItem()
 
   // TODO: disable bid button if not logged in
   // const { data: customer } = useCustomer()
   // if (!customer) {
   //   throw new Error(`You should be logged in to be able to see auctions`)
   // }
-
-  const minBidStep = 10;
 
   const submitBid = async () => {
     setLoading(true)
@@ -59,7 +64,7 @@ const AuctionView: FC<Props> = ({ product }) => {
         <div className={cn(s.productDisplay, 'fit')}>
           <div className={s.sliderContainer}>
             <ProductSlider key={product.id}>
-              {product.images.map((image, i) => (
+              {product?.images?.map((image, i) => (
                 <div key={image.url} className={s.imageContainer}>
                   <Image
                     className={s.img}
@@ -81,6 +86,9 @@ const AuctionView: FC<Props> = ({ product }) => {
               <h1 className={s.name}>{product.name}</h1>
             </div>
             <div className="pb-6 break-words w-full max-w-xl">
+              <Text html={auction.description} />
+            </div>
+            <div className="pb-6 break-words w-full max-w-xl">
               <Text html={product.description} />
             </div>
             <div className="pb-6">
@@ -93,25 +101,22 @@ const AuctionView: FC<Props> = ({ product }) => {
             <div className="pb-6">
               <h4 className="font-bold text-base"> Current bid </h4>
               <p>
-              <span className={s.price}>
-                {price}
-                {` `}
-                {product.price?.currencyCode}
-              </span>
+              <span className={s.price}> {currentBidPrice} {` `} {currencyCode} </span>
                 <span> (12 bids) </span>
               </p>
             </div>
             <div className="pb-6">
               <h4 className="font-bold text-base"> Your bid </h4>
               <p>
-                <span> Enter {price + ' + ' + minBidStep} {` `} {product.price?.currencyCode} or more </span>
+                <span> Enter {minNextBidPrice} {` `} {currencyCode} or more </span>
               </p>
               <Input
                 className={s.inputBid}
                 type="number"
                 value={placedBid}
                 onChange={setPlacedBid}
-                step={minBidStep}
+                step={auction.price_step}
+                min={minNextBidValue}
               />
             </div>
             <Button

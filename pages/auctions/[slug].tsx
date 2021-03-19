@@ -1,28 +1,30 @@
 import type {
   GetStaticPathsContext,
   GetStaticPropsContext,
-  InferGetStaticPropsType,
+  InferGetStaticPropsType
 } from 'next'
 import { useRouter } from 'next/router'
 import { Layout } from '@components/common'
 import { AuctionView } from '@components/auctions'
 
 import { getConfig } from '@framework/api'
-import getProduct from '@framework/product/get-product'
-import getAllPages from '@framework/common/get-all-pages'
-import getAllProductPaths from '@framework/product/get-all-product-paths'
+import getAuction from '@framework/auction/get-auction'
+import getProductById from '@framework/product/get-product-by-id'
+import { getActiveAuctions } from '@framework/auction'
 
-export async function getStaticProps({
- params,
- preview,
-}: GetStaticPropsContext<{ slug: string }>) {
+export async function getStaticProps({ params }: GetStaticPropsContext<{ slug: string }>) {
   const config = getConfig()
-  const { pages } = await getAllPages({ config, preview })
-  const { product } = await getProduct({
-    variables: { slug: params!.slug },
-    config,
-    preview,
-  })
+  const auctionId = Number.parseInt(params!.slug);
+
+  if (Number.isNaN(auctionId)) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const auction = await getAuction(config, auctionId);
+  const product = await getProductById(config, auction.source_product_id)
+  const productData = product?.site?.product;
 
   if (!product) {
     throw new Error(`Product with slug '${params!.slug}' not found`)
@@ -30,31 +32,28 @@ export async function getStaticProps({
 
   return {
     props: {
-      pages,
+      auction,
       product,
     },
-    revalidate: 200,
+    revalidate: 1,
   }
 }
 
 export async function getStaticPaths({}: GetStaticPathsContext) {
-  const { products } = await getAllProductPaths()
+  const auctions = await getActiveAuctions(getConfig());
 
   return {
-    paths: products.map((product) => `/auctions${product.node.path}`),
+    paths: auctions.map(auction => `/auctions/${auction.id}`),
     fallback: 'blocking',
   }
 }
 
-export default function AuctionPage({
-  product,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-
+export default function AuctionPage({ product, auction }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter()
 
   return router.isFallback ?
     <h1>Loading...</h1> :
-    <AuctionView product={product as any} />
+    <AuctionView product={product} auction={auction} />
 }
 
 AuctionPage.Layout = Layout

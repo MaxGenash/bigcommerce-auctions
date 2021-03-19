@@ -46,7 +46,9 @@ async function getActiveAuctions(
   config: BigcommerceConfig
 ): Promise<Auction[]> {
   return getMockedAuctions()
-  const url = '/auctions?status=1'
+
+  // TODO: use when ready
+  const url = '/v3/catalog/auctions?status=1'
   const { data } = await config.storeApiFetch<any>(url)
   return data
 }
