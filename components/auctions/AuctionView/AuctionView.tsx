@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { NextSeo } from 'next-seo'
 import { FC, FormEvent, useState } from 'react'
 import { ProductSlider } from '@components/product'
-import { Button, Container, Input, Text } from '@components/ui'
+import { Button, Container, Text } from '@components/ui'
 import type { Auction, Product, Bid } from '@commerce/types'
 import usePrice from '@framework/product/use-price'
 import { DateTime, Duration } from 'luxon'
@@ -20,14 +20,19 @@ interface Props {
   bids: Bid[]
 }
 
-const AuctionView: FC<Props> = ({ product, auction, bids}) => {
-  const minNextBidValue = auction.actual_price + auction.price_step;
-  const currencyCode = product?.price?.currencyCode;
-  const { price: currentBidPrice } = usePrice({ amount: auction.actual_price, currencyCode: currencyCode })
-  const { price: minNextBidPrice } = usePrice({ amount: minNextBidValue, currencyCode: currencyCode })
+const AuctionView: FC<Props> = ({ product, auction, bids }) => {
+  const minNextBidValue = auction.actual_price + auction.price_step
+  const currencyCode = product?.price?.currencyCode
+  const { price: currentBidPrice } = usePrice({
+    amount: auction.actual_price,
+    currencyCode: currencyCode,
+  })
+  const { price: nextBidPrice } = usePrice({
+    amount: minNextBidValue,
+    currencyCode: currencyCode,
+  })
 
   const [isLoading, setLoading] = useState(false)
-  const [placedBid, setPlacedBid] = useState()
 
   const router = useRouter()
 
@@ -38,7 +43,7 @@ const AuctionView: FC<Props> = ({ product, auction, bids}) => {
   // }
 
   const submitBid = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     setLoading(true)
     try {
       // TODO updateBid
@@ -46,31 +51,32 @@ const AuctionView: FC<Props> = ({ product, auction, bids}) => {
       //   productId: String(product.id),
       //   variantId: String(variant ? variant.id : product.variants[0].id),
       // })
-      alert('Your bid was saved successfully!');
-      router.reload();
-      setLoading(false);
+      alert('Your bid was saved successfully!')
+      router.reload()
+      setLoading(false)
     } catch (err) {
-      console.error(err);
-      alert('Couldn\'t save your bid');
-      setLoading(false);
+      console.error(err)
+      alert("Couldn't save your bid")
+      setLoading(false)
     }
   }
-  const bidsOverall = bids?.length || 0;
+  const bidsOverall = bids?.length || 0
 
   const { time: currentSecondsLeft } = useTimer({
     initialTime: Math.floor((auction.end_date - Date.now()) / 1000),
     timerType: 'DECREMENTAL',
     autostart: true,
-  });
-  const timeLeftInfo = Duration.fromMillis(currentSecondsLeft * 1000).shiftTo('days', 'hours', 'minutes', 'seconds').toObject();
-  const endDateStr = DateTime.fromMillis(auction.end_date).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+  })
+  const timeLeftInfo = Duration.fromMillis(currentSecondsLeft * 1000)
+    .shiftTo('days', 'hours', 'minutes', 'seconds')
+    .toObject()
+  const endDateStr = DateTime.fromMillis(auction.end_date).toLocaleString(
+    DateTime.DATETIME_SHORT_WITH_SECONDS
+  )
 
   return (
     <Container className="max-w-none w-full" clean>
-      <NextSeo
-        title={product.name}
-        description={product.description}
-      />
+      <NextSeo title={product.name} description={product.description} />
       <div className={cn(s.root, 'fit')}>
         <div className={cn(s.productDisplay, 'fit')}>
           <div className={s.sliderContainer}>
@@ -105,37 +111,33 @@ const AuctionView: FC<Props> = ({ product, auction, bids}) => {
             <div className="pb-6">
               <h4 className="font-bold text-base"> Time left </h4>
               <p>
-                <span> {timeLeftInfo.days}d {timeLeftInfo.hours}h {timeLeftInfo.minutes}m {timeLeftInfo.seconds}s </span>
+                <span>
+                  {' '}
+                  {timeLeftInfo.days}d {timeLeftInfo.hours}h{' '}
+                  {timeLeftInfo.minutes}m {timeLeftInfo.seconds}s{' '}
+                </span>
                 <span> ({endDateStr}) </span>
               </p>
             </div>
             <div className="pb-6">
-              <h4 className="font-bold text-base"> Current bid </h4>
+              <h4 className="font-bold text-base"> Current price </h4>
               <p>
-              <span className={s.price}> {currentBidPrice} {` `} {currencyCode} </span>
+                <span className={s.price}> {currentBidPrice} </span>
                 <span> ({bidsOverall} bids) </span>
               </p>
             </div>
             <div className="pb-6">
               <h4 className="font-bold text-base"> Your bid </h4>
               <p>
-                <span> Enter {minNextBidPrice} {` `} {currencyCode} or more </span>
+                <span> {nextBidPrice} </span>
               </p>
-              <Input
-                className={s.inputBid}
-                type="number"
-                value={placedBid}
-                onChange={setPlacedBid}
-                step={auction.price_step}
-                min={minNextBidValue}
-              />
             </div>
             <Button
               aria-label="Place bid"
               type="submit"
               className={s.btnSubmit}
               loading={isLoading}
-              disabled={false /*TODO !variant && product.options.length > 0*/}
+              disabled={isLoading}
             >
               Place bid
             </Button>
