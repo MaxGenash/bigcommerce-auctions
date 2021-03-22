@@ -6,6 +6,7 @@ import { ProductSlider } from '@components/product'
 import { Button, Container, Text } from '@components/ui'
 import type { Auction, Product, Bid } from '@commerce/types'
 import usePrice from '@framework/product/use-price'
+import useCustomer from '@framework/customer/use-customer'
 import { DateTime, Duration } from 'luxon'
 import { useTimer } from 'use-timer'
 
@@ -36,21 +37,23 @@ const AuctionView: FC<Props> = ({ product, auction, bids }) => {
 
   const router = useRouter()
 
-  // TODO: disable bid button if not logged in
-  // const { data: customer } = useCustomer()
-  // if (!customer) {
-  //   throw new Error(`You should be logged in to be able to see auctions`)
-  // }
+  const { data: customer } = useCustomer()
 
   const submitBid = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     try {
-      // TODO updateBid
-      // await addItem({
-      //   productId: String(product.id),
-      //   variantId: String(variant ? variant.id : product.variants[0].id),
-      // })
+      console.log('customer data = ', customer)
+
+      await fetch('/api/bigcommerce/auctions', {
+        method: 'POST',
+        body: JSON.stringify({
+          auctionId: auction.id,
+          newBid: nextBidPrice,
+          customerId: customer?.entityId,
+        }),
+      })
+
       alert('Your bid was saved successfully!')
       router.reload()
       setLoading(false)
@@ -137,7 +140,12 @@ const AuctionView: FC<Props> = ({ product, auction, bids }) => {
               type="submit"
               className={s.btnSubmit}
               loading={isLoading}
-              disabled={isLoading}
+              title={
+                customer?.entityId
+                  ? ''
+                  : 'Please log in to be able to place bids'
+              }
+              disabled={isLoading || !customer?.entityId}
             >
               Place bid
             </Button>
