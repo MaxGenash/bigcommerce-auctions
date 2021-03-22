@@ -6,7 +6,7 @@ async function addBid(
   newBid: number,
   customerId: string
 ): Promise<unknown> {
-  return await config.storeApiFetch(`/v3/catalog/auctions/${auctionId}`, {
+  return await config.storeApiFetch(`/v3/catalog/auctions/${auctionId}/bids`, {
     method: 'POST',
     body: JSON.stringify({
       customer_id: customerId,

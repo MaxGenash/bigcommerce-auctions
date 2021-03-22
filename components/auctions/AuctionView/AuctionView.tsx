@@ -43,16 +43,17 @@ const AuctionView: FC<Props> = ({ product, auction, bids }) => {
     e.preventDefault()
     setLoading(true)
     try {
-      console.log('customer data = ', customer)
-
-      await fetch('/api/bigcommerce/auctions', {
+      const response = await fetch('/api/bigcommerce/auctions', {
         method: 'POST',
         body: JSON.stringify({
           auctionId: auction.id,
-          newBid: nextBidPrice,
+          newBid: auction.actual_price,
           customerId: customer?.entityId,
         }),
       })
+      if (response.status >= 400) {
+        throw new Error(response.statusText)
+      }
 
       alert('Your bid was saved successfully!')
       router.reload()

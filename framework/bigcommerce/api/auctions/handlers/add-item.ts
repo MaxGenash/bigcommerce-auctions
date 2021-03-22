@@ -7,11 +7,12 @@ const addItem: BigcommerceHandler<any, any> = async ({
   body,
   config,
 }) => {
+  const parsed = JSON.parse(body)
   const result = await addBid(
     config,
-    body.auctionId,
-    body.newBid,
-    body.customerId
+    parsed.auctionId,
+    parsed.newBid,
+    parsed.customerId
   )
 
   res.status(200).json({ data: result })
